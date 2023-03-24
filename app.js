@@ -4,7 +4,7 @@ const multer = require('multer');
 
 const app = express();
 
-// Configuración de multer para subir archivos
+// Configuración de multer para subir archivos 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
