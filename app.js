@@ -9,7 +9,13 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 // Conexión a la base de datos de MongoDB
-mongoose.connect('mongodb://localhost:27017/aviones', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.Promise = global.Promise
+mongoose.set('strictQuery', true); 
+mongoose.connect("mongodb+srv://OneD:2233@atlascluster.k3fvuvl.mongodb.net/?retryWrites=true&w=majority",{
+    family: 4,
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Error de conexión a MongoDB'));
 db.once('open', function() {
