@@ -1,71 +1,68 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const multer = require('multer');
+const bodyParser = require('body-parser');
+const cors = require('cors');
 
 const app = express();
+const port = process.env.PORT || 3000;
 
-// Configuración de multer para subir archivos 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+// Conexión a la base de datos
+mongoose.connect('mongodb://localhost:27017/aviones', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => console.log('Conectado a MongoDB'))
+  .catch(error => console.log(error));
 
-// Conexión a la base de datos de MongoDB
-mongoose.Promise = global.Promise
-mongoose.set('strictQuery', true); 
-mongoose.connect("mongodb+srv://OneD:2233@atlascluster.k3fvuvl.mongodb.net/?retryWrites=true&w=majority",{
-    family: 4,
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-  })
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'Error de conexión a MongoDB'));
-db.once('open', function() {
-  console.log('Conexión exitosa a MongoDB');
-});
-
-// Definición del modelo de datos para el avión
+// Definición del schema de aviones
 const avionSchema = new mongoose.Schema({
   nombre: String,
-  cabinCapacity: String,
-  cargoCapacity: String,
-  passengers: String,
-  range: String,
-  speed: String,
-  imagen: Buffer
+  cabinCapacity: Number,
+  cargoCapacity: Number,
+  passengers: Number,
+  range: Number,
+  speed: Number,
+  imagen: Buffer,
 });
 
 const Avion = mongoose.model('Avion', avionSchema);
 
-// Rutas de la API
-app.post('/aviones', upload.single('imagen'), async (req, res) => {
-  try {
-    const avion = new Avion({
-      nombre: req.body.nombre,
-      cabinCapacity: req.body.cabinCapacity,
-      cargoCapacity: req.body.cargoCapacity,
-      passengers: req.body.passengers,
-      range: req.body.range,
-      speed: req.body.speed,
-      imagen: req.file.buffer
-    });
-    await avion.save();
-    res.status(201).send(avion);
-  } catch (error) {
-    console.log(error);
-    res.status(500).send(error);
-  }
-});
+app.use(cors());
+app.use(bodyParser.json());
 
+// Ruta para obtener todos los aviones
 app.get('/aviones', async (req, res) => {
   try {
+    console.log(`Petición GET recibida desde la dirección IP: ${req.ip}`);
     const aviones = await Avion.find();
-    res.send(aviones);
+    res.json(aviones);
   } catch (error) {
-    console.log(error);
-    res.status(500).send(error);
+    res.status(500).json({ message: error.message });
   }
 });
 
-// Inicio del servidor
-app.listen(3000, () => {
-  console.log('Servidor iniciado en el puerto 3000');
+// Ruta para agregar un avión
+app.post('/aviones', async (req, res) => {
+  const avion = new Avion({
+    nombre: req.body.nombre,
+    cabinCapacity: req.body.cabinCapacity,
+    cargoCapacity: req.body.cargoCapacity,
+    passengers: req.body.passengers,
+    range: req.body.range,
+    speed: req.body.speed,
+    imagen: req.body.imagen,
+  });
+
+  try {
+    console.log(`Petición POST recibida desde la dirección IP: ${req.ip}`);
+    const nuevoAvion = await avion.save();
+    res.status(201).json(nuevoAvion);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// Iniciar el servidor
+app.listen(port, () => {
+  console.log(`Servidor iniciado en el puerto ${port}`);
 });
