@@ -43,7 +43,7 @@ app.get('/aviones', async (req, res) => {
 
 // Ruta para agregar un avión
 app.post('/aviones', async (req, res) => {
-  console.log(req.body)
+  console.log(req)
   const avion = new Avion({    
     nombre: req.body.nombre,
     cabinCapacity: req.body.cabinCapacity,
