@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Conexión a la base de datos
-mongoose.connect('mongodb://localhost:27017/aviones', {
+mongoose.connect('mongodb+srv://OneD:2233@atlascluster.k3fvuvl.mongodb.net/?retryWrites=true&w=majority/aviones', {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
