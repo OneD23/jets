@@ -45,7 +45,7 @@ app.get('/aviones', async (req, res) => {
 app.post('/aviones', async (req, res) => {
   console.log(req.query)
   const avion = new Avion({    
-    nombre: req.query.nombre,
+    name: req.query.nombre,
     cabinCapacity: req.query.cabinCapacity,
     cargoCapacity: req.query.cargoCapacity,
     passengers: req.query.passengers,
